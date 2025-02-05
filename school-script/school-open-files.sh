@@ -5,10 +5,11 @@
 
 
 ### VARIABLES ###
-source "/home/leomartin/.scripts/get-school-lesson.sh"
+source "$HOME/.scripts/get-school-lesson.sh"
 
-download_dir="/home/leomartin/downloads"
-lesson_log_file="/home/leomartin/.scripts/.set_lesson.log"
+download_dir="$HOME/downloads"
+lesson_log_file="$HOME/.scripts/.set_lesson.log"
+default_files="$HOME/.scripts/defaults"
 
 
 ### FUNCTIONS ###
@@ -22,24 +23,43 @@ function write_last_dir {
 	grep -q "^$dir_variable_name=" "$last_visited_dir_file" && sed -i "s|^$dir_variable_name=.*|$dir_variable_name=$1|" "$last_visited_dir_file" 
 }
 
-
 function select_folder {
-	available_subfolders=$(ls -dt "${lesson_array[0]}"/*/ 2>/dev/null)
+    current_dir="${lesson_array[0]}"
+	available_subfolders=$(ls -dt "$current_dir"/*/ 2>/dev/null)
+	local all_folder=""
 		
-	[ -n "$available_subfolders" ] && {
+	while : 
+	do
 		available_subfolders=$(echo "$available_subfolders" | xargs -n 1 basename)
-	}
 
-	folder=$(echo -e "$available_subfolders" | dmenu -c -l 5 -i -p "Select Folder: ")
+		[ -z "$available_subfolders" ] && {	
+				local folder=$(echo -e "Create New" | dmenu -c -bw 2 -noi -i -p "Select Folder: ")
+		} || {
+				local folder=$(echo -e "$available_subfolders" | dmenu -c -l 5 -i -p "Select Folder: ")
+		}
 
-	#[ -d "${lession_array[0]}/$folder
+		[ -z "$folder" ] && {
+				echo "$all_folder"
+				exit
+		}
 
-	[ -d "${lesson_array[0]}/$folder" ] || {
-		mkdir "${lesson_array[0]}/$folder"
-		notify-send -t 5000 "Folder $folder/ created"
-	}
+		[ "$folder" == "Create New" ] && {
+				folder="$(echo "" | dmenu -c -p "Name Folder: " <&-)"
+				folder="${folder// /-}" 
+		}
+
+		[ -d "$current_dir/$all_folder/$folder" ] || { # create folder if does not exist already
+		    mkdir "${lesson_array[0]}/$all_folder/$folder"
+		    notify-send -t 5000 "Folder $folder/ created"
+		}
+
+		all_folder+="$folder/"	
+		available_subfolders=$(ls -dt "$current_dir/$all_folder"*/ 2>/dev/null)
+		
+    done
+	echo "$all_folder"
+
 }
-
 
 
 ### SCRIPT ###
@@ -48,52 +68,72 @@ function select_folder {
     lesson_name="$(cat "$lesson_log_file")"
     declare -n ref_array="$lesson_name"
     lesson_array=("${ref_array[@]}")
-} || { # if lesson log file is empty
+} || {
     get_current_lesson
 }
 
 
 # special lesson requirements
 if [ "${lesson_array[1]}" == "Informatik" ]; then
-	software_choice="$(echo -e "python\nnvim\nokular\nxournal\nteams\nthunar\nlibreoffice" | dmenu -c -l 10 -i -p "Open File in: ")"
+	software_choice="$(echo -e "okular\npython\nnvim\nthunar\nteams\nzathura\nqnote\nlibreoffice" | dmenu -c -bw 2 -l 10 -i -p "Open File in: ")"
 
-#elif [ "${lesson_array[1]}" == "" ]; then
-#	software_choice="$(echo -e "python\nnvim\nokular\nxournal\nteams\nthunar\nlibreoffice" | dmenu -c -l 10 -i -p "Open File in: ")"
+elif [ "${lesson_array[1]}" == "Maturaarbeit" ]; then
+	software_choice="$(echo -e "zathura\nokular\nnvim\nokular\nthunar\nlatex\npython\nlibreoffice\nqnote" | dmenu -c -l 10 -bw 2 -i -p "Open File in: ")"
+
+elif [ "${lesson_array[1]}" == "Physik Praktikum" ]; then
+	software_choice="$(echo -e "python\nzathura\nokular\nthunar\nlatex\nnvim\nteams\nlibreoffice\nqnote" | dmenu -c -bw 2 -l 10 -i -p "Open File in: ")"
+
+elif [ "${lesson_array[1]}" == "No Lesson" ]; then
+	echo "No Lesson" | dmenu -c -noi
+	exit
+
+elif [ "${lesson_array[1]}" == "Weekend" ]; then
+	echo "Weekend" | dmenu -c -noi
+	exit
 
 else
-	software_choice="$(echo -e "okular\nxournal\nnvim\nteams\nthunar\npython\nlibreoffice" | dmenu -c -l 10 -i -p "Open File in: ")"
+	software_choice="$(echo -e "okular\nxournal\nnvim\nteams\nthunar\nzathura\npython\nqnote\nlatex\nlibreoffice" | dmenu -c -bw 2 -l 10 -i -p "Open File in: ")"
 fi
 
 
 case $software_choice in
 	okular)
-		# Open .pdf files in okular
+		# open .pdf files in okular
 		full_path=$(find ${lesson_array[0]} -type f -iname '*.pdf' -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
-		selected_file=$(echo "$full_path" | sed 's:.*/::' | dmenu -c -l 5 -i -p "Select File: ")
+		selected_file=$(echo "$full_path" | sed 's:.*/::' | dmenu -c -l 10 -bw 2 -i -p "Select File: ")
 		[ -z "$selected_file" ] && {
 			exit 1
 		}
-
+		
 		file_path=$(echo "$full_path" | grep "/$selected_file$")
 		okular "$file_path"
 		;;
 
 	xournal)
-		# Open .pdf or .xopp files in xournal
+		# open .pdf or .xopp files in xournal
 		full_path=$(find ${lesson_array[0]} -type f \( -iname '*.pdf' -o -iname '*.xopp' \) -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
-		selected_file=$(echo "$full_path" | sed 's:.*/::' | dmenu -c -l 5 -i -p "Select File: ")
+		selected_file=$(echo -e "Create New\n$full_path" | sed 's:.*/::' | dmenu -c -l 10 -i -p "Select File: ")
 		[ -z "$selected_file" ] && {
 			exit 1
 		}
 
-		file_path=$(echo "$full_path" | grep "/$selected_file$")
-		xournalpp "$file_path"
+		[ "$selected_file" == "Create New" ] && {
+				filename="$(echo "" | dmenu -c -p "Name File: " <&-)"
+				filename="${filename// /-}" # replace the whitespaces with '-'
+
+				folder=$(select_folder)
+				cp "$default_files/xournal_default.xopp" "${lesson_array[0]}/$folder/$filename.xopp" 
+				xournalpp "${lesson_array[0]}/$folder$filename.xopp" 
+		} || {
+				file_path=$(echo "$full_path" | grep "/$selected_file$")
+				xournalpp "$file_path"
+		}
 		;;
 
 	nvim)
-		# Open .txt file or create new in nvim
+		# open .txt file or create new in nvim
 		full_path=$(find ${lesson_array[0]} -type f -iname '*.txt' -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
-		selected_file=$(echo -e "Create New\n$full_path" | sed 's:.*/::' | dmenu -c -l 5 -i -p "Select File: ")
+		selected_file=$(echo -e "Create New\n$full_path" | sed 's:.*/::' | dmenu -c -l 10 -i -p "Select File: ")
 		[ -z "$selected_file" ] && {
 			exit 1
 		}
@@ -102,7 +142,7 @@ case $software_choice in
 			filename="$(echo "" | dmenu -c -p "Name File: " <&-)"
 			filename="${filename// /-}" # replace the whitespaces with '-'
 
-			select_folder
+			folder=$(select_folder)
 
 			st -e bash -c "cd '${lesson_array[0]}'/'$folder'; nvim '$filename'.txt; exec bash" 
 		} || {
@@ -113,37 +153,38 @@ case $software_choice in
 		;;
 
 	thunar)
-		# Open thunar in chosen subfolder (if pressed esc during file choosing then it goes to the home dir of the current lesson)
-		select_folder
+		# open thunar in chosen subfolder (press esc for home dir of current lesson)
+		folder=$(select_folder)
 		thunar "${lesson_array[0]}/$folder"
 		;;
 
 	teams)
-		# Open teams in firefox
+		# open teams in librewolf
 		[ "${lesson_array[1]}" == "EWR" ] && {
-			firefox "https://www.microsoft365.com/launch/onenote?auth=2" # open one note
+		    librewolf "https://www.microsoft365.com/launch/onenote?auth=2" # open one note
 		} || {
-			firefox "https://teams.microsoft.com/v2/"
+		    librewolf "https://teams.microsoft.com/v2/"
 		}
 		;;
 	
 	python)
-		# Open and run or create new .py file
+		# open and run or create new .py file
 		full_path=$(find ${lesson_array[0]} -type f -iname '*.py' -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
-		selected_file=$(echo -e "Create New\n$full_path" | sed 's:.*/::' | dmenu -c -l 5 -i -p "Run Script or create new: ")
+		selected_file=$(echo -e "Create New\n$full_path" | sed 's:.*/::' | dmenu -c -l 10 -i -p "Select Script: ")
+
 		[ -z "$selected_file" ] && {
-			exit 1
+			exit
 		}
 
 		[ "$selected_file" == "Create New" ] && {
 			filename="$(echo "" | dmenu -c -p "Name Python Script: " <&-)"
 			filename="${filename// /-}" # replace the whitespaces with '-'
 
-			select_folder
+			folder=$(select_folder)
 
 			st -e bash -c "cd '${lesson_array[0]}'/'$folder'; nvim '$filename'.py; exec bash" 
 		} || {
-			script_choice="$(echo -e "edit\nrun\ncopy" | dmenu -c -i -p "Action: ")"
+			script_choice="$(echo -e "edit\nrun\ncopy" | dmenu -c -bw 2 -noi -i -p "Action: ")"
 			file_path=$(echo "$full_path" | grep "/$selected_file$")
 			dir_path=$(dirname "$file_path")
 
@@ -178,7 +219,6 @@ case $software_choice in
 				cp "$dir_path/$selected_file" "$dir_path/$new_filename"  
 				st -e bash -c "cd '$dir_path'; nvim '$new_filename'; exec bash"
 				;;
-
 			*)
 				exit
 				;;
@@ -187,9 +227,9 @@ case $software_choice in
 		;;
 
 	libreoffice)
-		# Open file in libreoffice
+		# open file in libreoffice
 		full_path=$(find ${lesson_array[0]} -type f \( -iname '*.txt' -o -iname '*.odt' -o -iname '*.docx' \) -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
-		selected_file=$(echo -e "Create New\n$full_path" | sed 's:.*/::' | dmenu -c -l 5 -i -p "Select File: ")
+		selected_file=$(echo -e "Create New\n$full_path" | sed 's:.*/::' | dmenu -c -l 10 -i -p "Select File: ")
 		[ -z "$selected_file" ] && {
 			exit 1
 		}
@@ -199,12 +239,12 @@ case $software_choice in
 			filename="${filename// /-}"	
 
 			[ -z "$filename" ] && {
-				exit 1
+				exit
 			}
 			
 			file_type="$(echo -e "odt\ntxt" | dmenu -c -i -p "Filetype: ")"
 
-			select_folder
+			folder=$(select_folder)
 
 			touch "${lesson_array[0]}/$folder/$filename.$file_type"  
 			libreoffice "${lesson_array[0]}/$folder/$filename.$file_type" 
@@ -214,9 +254,73 @@ case $software_choice in
 			setsid -f libreoffice "$dir_path/$selected_file"
 		}
 		;;
+		
+	qnote)
+		# creat .txt note
+		st -e bash -c "cd '${lesson_array[0]}'; nvim note.txt; exec bash"	
+		;;
+
+    latex)
+		# open .tex file and the pdf or create new in nvim
+		full_path=$(find ${lesson_array[0]} -type f -iname '*.tex' -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
+		selected_file=$(echo -e "Create New\n$full_path" | sed 's:.*/::' | dmenu -c -l 10 -i -p "Select File: ")
+		[ -z "$selected_file" ] && exit
+
+				
+		[ "$selected_file" == "Create New" ] && {
+			filename="$(echo "" | dmenu -c -p "Name File: " <&-)"
+			filename="${filename// /-}" # replace the whitespaces with '-'
+		
+			folder=$(select_folder)
+		    cp "$default_files/template.tex" "${lesson_array[0]}/$folder/$filename.tex"
+
+		    st -e bash -c "cd '${lesson_array[0]}'/'$folder'; nvim '$filename'.tex; exec bash"# & \
+
+		} || {
+			file_path=$(echo "$full_path" | grep "/$selected_file$")
+		    file_basename=$(basename "$selected_file" .tex)
+		    dir_path=$(dirname "$file_path")
+
+
+		    tex_choice="$(echo -e "all\npdf\ntex\nbib" | dmenu -c -bw 2 -noi -i -p "Action: ")"
+		    case $tex_choice in
+				all)
+				    st -e bash -c "cd '$dir_path'; nvim '$file_basename'.tex; exec bash" & \
+				    zathura "$dir_path/$file_basename.pdf"
+				    ;;
+				pdf)
+				    zathura "$dir_path/$file_basename.pdf"
+				    ;;
+				tex)
+				    st -e bash -c "cd '$dir_path'; nvim '$file_basename'.tex; exec bash" & \
+		    	    ;;
+				bib)
+				    st -e bash -c "cd '$dir_path'; nvim sources.bib; exec bash" & \
+				    ;;
+ 
+				*)
+				    exit
+				    ;;
+		    esac
+
+		}
+		;;
+
+    zathura)
+		# open .pdf files in okular
+		full_path=$(find ${lesson_array[0]} -type f -iname '*.pdf' -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
+		selected_file=$(echo "$full_path" | sed 's:.*/::' | dmenu -c -l 10 -bw 2 -i -p "Select File: ")
+		[ -z "$selected_file" ] && {
+			exit 1
+		}
+		
+		file_path=$(echo "$full_path" | grep "/$selected_file$")
+		zathura "$file_path"
+		;;
+
 
 	*)
-		# Cancel script (esc key pressed)
+		# cancel script (esc key pressed)
 		exit
 		;;
 esac
