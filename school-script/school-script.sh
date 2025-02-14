@@ -29,6 +29,7 @@ day_of_week=$(date +%u)
 # Lession Arrays
 # "lession directory" "Lession Name" "last visited subfolder variable name"
 
+# update script to work with the other bash scripts
 geschichte=("/home/leomartin/documents/school/geschichte" "Geschichte" "geschichte_dir")
 informatik=("/home/leomartin/documents/school/informatik" "Informatik" "informatik_dir")
 deutsch=("/home/leomartin/documents/school/deutsch" "Deutsch" "deutsch_dir")
@@ -147,22 +148,6 @@ esac
 
 }
 
-# if log file is not empty overwrite the get_current_lession
-#[ -s $set_lession_log_file ] && { # if set_lession log file is not empty
-#	lession_name="$(cat $set_lession_log_file)"
-#	declare -n ref_array="$lession_name"
-#	lession_array=("${ref_array[@]}")
-#
-#} || { # if set_lession log file is empty
-#	get_current_lession
-#}
-
-#lession_array=("oko" "ligma")
-
-
-
-
-
 
 
 
@@ -183,8 +168,6 @@ function write_last_dir {
 
 
 
-
-
 function school {
 
 [ -s $set_lesson_log_file ] && { # if set_lesson log file is not empty
@@ -196,24 +179,6 @@ function school {
 	get_current_lesson
 }
 
-#last_visited_dir=$(grep "^${lession_array[2]}=" "$last_visited_dir_file" | cut -d'=' -f2-)
-#last_visited_dir=$(get_last_dir)
-
-
-
-
-#new_args=()
-
-
-#for argument in "$@"; do
-#	[ "$argument" != "sort-" ] && {
-#		new_args+=("$argument")
-#	} 
-#done
-
-
-
-#argument_count=${#new_args[@]}
 
 
 case $# in
