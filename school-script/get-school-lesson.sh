@@ -9,19 +9,13 @@ day_of_week=$(date +%u)
 
 
 # lesson_array=("lesson_directory" "lesson_name" "last_visited_subfolder_variable_name")
-geschichte=("/home/leomartin/documents/school/geschichte" "Geschichte" "geschichte_dir")
-informatik=("/home/leomartin/documents/school/informatik" "Informatik" "informatik_dir")
-deutsch=("/home/leomartin/documents/school/deutsch" "Deutsch" "deutsch_dir")
-francais=("/home/leomartin/documents/school/francais" "Francais" "francais_dir")
-english=("/home/leomartin/documents/school/english" "English" "english_dir")
-physik=("/home/leomartin/documents/school/physik" "Physik" "physik_dir")
-physik_praktikum=("/home/leomartin/documents/school/physik/praktikum" "Physik Praktikum" "physik_praktikum_dir")
-wirtschaft=("/home/leomartin/documents/school/wirtschaft" "EWR" "wirtschaft_dir")
-mathematik=("/home/leomartin/documents/school/mathematik" "Mathematik" "mathematik_dir")
-no_lesson=("/home/leomartin" "No Lesson")
-weekend=("/home/leomartin" "Weekend")
+lesson_1=("$HOME/documents/school/lesson-1-dir" "Lesson 1" "geschichte_dir")
+lesson_2=("$HOME/documents/school/lesson-2-dir" "Lesson 2" "informatik_dir")
+#...
+no_lesson=("$HOME" "No Lesson")
+weekend=("$HOME" "Weekend")
 
-testing=("/home/leomartin/documents/school/testing" "Testing" "testing_dir")
+
  
 
 
