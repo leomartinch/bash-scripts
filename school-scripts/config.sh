@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Configuration File for School Script
-
-
 download_dir="$HOME/downloads"
 main_base_dir="$HOME/documents/school"
 
