@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script to open and create notes in notes folder
-# Leo Martin 2024
+# Leo Martin (2025)
 
 ### VARIABLES ###
 notes_folder="$HOME/documents/notes"
@@ -50,13 +50,3 @@ case $selected_note in
 		;;
 
 esac
-
-
-
-	
-	
-
-
-
-
-
