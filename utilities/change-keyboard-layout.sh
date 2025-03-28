@@ -4,7 +4,7 @@
 # Leo Martin (2025)
 
 ### DEFINE LAYOUTS ###
-layouts=(us ch de)
+layouts=(us ch)
 
 
 ### SCRIPT ###
