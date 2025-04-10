@@ -24,7 +24,7 @@ These are:
 - `zathura`: A lightweight PDF viewer used for only viewing purposes.
 - `thunar`: A graphical file manager.
 - `libreoffice`: An office suite.
-
+- `mpv`: A video player.
 
 ## Installation
 1. Clone this repository into a folder of you choosing. I would recomend to put these scripts into a .scripts/ folder in your home directory:
