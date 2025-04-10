@@ -1,30 +1,23 @@
 #!/bin/bash
 
 # Function to get current lesson based on time
-# Leo Martin (2024)
+# Leo Martin (2025)
 
 
 ### VARIABLES ###
 
 # "lesson_directory", "lesson_name", "last_visited_subfolder_variable_name"
-geschichte=("/home/leomartin/documents/school/geschichte" "Geschichte" "geschichte_dir")
-informatik=("/home/leomartin/documents/school/informatik" "Informatik" "informatik_dir")
-deutsch=("/home/leomartin/documents/school/deutsch" "Deutsch" "deutsch_dir")
-francais=("/home/leomartin/documents/school/francais" "Francais" "francais_dir")
-english=("/home/leomartin/documents/school/english" "English" "english_dir")
-physik=("/home/leomartin/documents/school/physik" "Physik" "physik_dir")
-
-physik_praktikum=("/home/leomartin/documents/school/physik-praktikum/fluid-simulation-projekt/" "Physik Praktikum" "physik_praktikum_dir")
-wirtschaft=("/home/leomartin/documents/school/wirtschaft" "EWR" "wirtschaft_dir")
-mathematik=("/home/leomartin/documents/school/mathematik" "Mathematik" "mathematik_dir")
-no_lesson=("/home/leomartin" "No Lesson")
-weekend=("/home/leomartin" "Weekend")
-
-testing=("/home/leomartin/documents/school/testing" "Testing" "testing_dir")
- 
-maturaarbeit=("/home/leomartin/documents/maturaarbeit/" "Maturaarbeit" "maturaarbeit_dir")
-projects=("/home/leomartin/documents/projects/" "Projects" "projects_dir")
-
+geschichte=("$HOME/documents/school/geschichte" "Geschichte" "geschichte_dir")
+informatik=("$HOME/documents/school/informatik" "Informatik" "informatik_dir")
+deutsch=("$HOME/documents/school/deutsch" "Deutsch" "deutsch_dir")
+francais=("$HOME/documents/school/francais" "Francais" "francais_dir")
+english=("$HOME/school/english" "English" "english_dir")
+physik=("$HOME/documents/school/physik" "Physik" "physik_dir")
+physik_praktikum=("$HOME/documents/school/physik-praktikum/fluid-simulation-projekt/" "Physik Praktikum" "physik_praktikum_dir")
+wirtschaft=("$HOME/documents/school/wirtschaft" "EWR" "wirtschaft_dir")
+mathematik=("$HOME/documents/school/mathematik" "Mathematik" "mathematik_dir")
+no_lesson=("$HOME" "No Lesson")
+weekend=("$HOME" "Weekend")
 
 ### FUNCTIONS ###
 
