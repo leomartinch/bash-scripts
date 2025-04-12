@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# Script to quit DWM
+# Leo Martin (2025)
 
 choice=$(echo -e "shutdown\nreboot" | dmenu -noi -p "Shut Down " -pb "#710000")
 
