@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Function to overwrite current lesson
+# Leo Martin (2025)
+
 source "$HOME/.scripts/get-school-lesson.sh"
 source "$HOME/.scripts/config.sh"
 source "$HOME/.scripts/functions.sh"
