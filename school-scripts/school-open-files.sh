@@ -3,7 +3,6 @@
 # Script to open files in various programms
 # Leo Martin (2025)
 
-
 ### VARIABLES ###
 source "$HOME/.scripts/get-school-lesson.sh"
 source "$HOME/.scripts/config.sh"
@@ -11,7 +10,6 @@ source "$HOME/.scripts/functions.sh"
 
 
 ### SCRIPT ###
-
 [ -s "$lesson_log_file" ] && { # if lesson log file is not empty
     lesson_name="$(cat "$lesson_log_file")"
     declare -n ref_array="$lesson_name"
@@ -19,7 +17,6 @@ source "$HOME/.scripts/functions.sh"
 } || {
     get_current_lesson
 }
-
 
 # special lesson requirements
 if [ "${lesson_array[1]}" == "Informatik" ]; then
@@ -213,7 +210,7 @@ case $software_choice in
 		$DEFAULT_TERMINAL -e bash -c "cd '${lesson_array[0]}'; nvim note.txt; exec bash"	
 		;;
 
-    latex)
+	latex)
 		# open .tex file and the pdf or create new in nvim
 		full_path=$(find ${lesson_array[0]} -type f -iname '*.tex' -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
 		selected_file=$(echo -e "Create New\n$full_path" | sed 's:.*/::' | dmenu -c -l 10 -i -p "Select File: ")
@@ -259,7 +256,7 @@ case $software_choice in
 		}
 		;;
 
-    zathura)
+	zathura)
 		# open .pdf files in okular
 		full_path=$(find ${lesson_array[0]} -type f -iname '*.pdf' -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
 		selected_file=$(echo "$full_path" | sed 's:.*/::' | dmenu -c -l 10 -bw 2 -i -p "Select File: ")
