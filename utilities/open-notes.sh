@@ -5,7 +5,7 @@
 
 ### VARIABLES ###
 notes_folder="$HOME/documents/notes"
-
+# add better folder search
 
 ### SCRIPT ###
 full_path=$(find "$notes_folder" -type f -iname '*.txt' -printf '%T@ %p\n' | sort -n -r | cut -d' ' -f2-)
