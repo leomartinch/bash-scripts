@@ -1,5 +1,6 @@
 # bash-scripts
 My Bash Scripts that help me with School and other tasks.
+More informations will be added in the near future.
 
 ## General Informations
 This bash script was created to efficiently navigate through my files for school.
